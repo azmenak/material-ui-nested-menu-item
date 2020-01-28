@@ -11,6 +11,9 @@ export const NestedMenu = () => {
   const [menuPosition, setMenuPosition] = useState<any>(null)
 
   const handleRightClick = (event: React.MouseEvent) => {
+    if (menuPosition) {
+      return
+    }
     event.preventDefault()
     setMenuPosition({
       top: event.pageX,
