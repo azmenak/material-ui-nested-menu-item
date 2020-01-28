@@ -1,0 +1,67 @@
+{
+  "name": "material-ui-nested-menu-item",
+  "version": "1.0.0",
+  "description": "Infinite nested material menus",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/azmenak/material-ui-nested-menu-item"
+  },
+  "scripts": {
+    "test": "jest",
+    "version": "npx @pika/pack"
+  },
+  "keywords": [
+    "react",
+    "hook",
+    "hooks",
+    "typescript",
+    "esm",
+    "pika",
+    "material-ui",
+    "nested menu item"
+  ],
+  "author": "Adam Zmenak <adam.zmenak@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "@material-ui/core": "^4.9.0",
+    "@material-ui/icons": "^4.5.1",
+    "@pika/pack": "^0.5.0",
+    "@pika/plugin-build-node": "^0.8.1",
+    "@pika/plugin-build-web": "^0.8.1",
+    "@pika/plugin-ts-standard-pkg": "^0.8.1",
+    "@pika/types": "^0.8.1",
+    "@testing-library/react": "^9.4.0",
+    "@testing-library/react-hooks": "^3.2.1",
+    "@types/jest": "^24.0.25",
+    "@types/react": "^16.9.17",
+    "jest": "^24.9.0",
+    "react": "^16.12.0",
+    "react-dom": "^16.12.0",
+    "react-test-renderer": "^16.12.0",
+    "ts-jest": "^24.3.0",
+    "typescript": "^3.7.4"
+  },
+  "peerDependencies": {
+    "@material-ui/core": "^4.9.0",
+    "@material-ui/icons": "^4.5.1",
+    "react": ">=16.9.0"
+  },
+  "@pika/pack": {
+    "pipeline": [
+      [
+        "@pika/plugin-ts-standard-pkg",
+        {
+          "exclude": [
+            "*.spec.*"
+          ]
+        }
+      ],
+      [
+        "@pika/plugin-build-node"
+      ],
+      [
+        "@pika/plugin-build-web"
+      ]
+    ]
+  }
+}
