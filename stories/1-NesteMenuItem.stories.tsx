@@ -35,6 +35,10 @@ export const NestedMenu = () => {
         <NestedMenuItem label='Button 3' parentMenuOpen={!!menuPosition}>
           <MenuItem>Sub-Button 1</MenuItem>
           <MenuItem>Sub-Button 2</MenuItem>
+          <NestedMenuItem label='Sub-Button 3' parentMenuOpen={!!menuPosition}>
+            <MenuItem>Sub-Sub-Button 1</MenuItem>
+            <MenuItem>Sub-Sub-Button 2</MenuItem>
+          </NestedMenuItem>
         </NestedMenuItem>
       </Menu>
     </div>
