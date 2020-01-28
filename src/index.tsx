@@ -1,4 +1,5 @@
 import React, {useState, useRef} from 'react'
+import {makeStyles} from '@material-ui/core/styles'
 import Menu, {MenuProps} from '@material-ui/core/Menu'
 import MenuItem, {MenuItemProps} from '@material-ui/core/MenuItem'
 import ArrowRight from '@material-ui/icons/ArrowRight'
@@ -17,6 +18,14 @@ interface NestedMenuItemProps extends React.HTMLAttributes<HTMLDivElement> {
   MenuItemProps?: MenuItemProps
   MenuProps?: Omit<MenuProps, 'children'>
 }
+
+const useMenuItemStyles = makeStyles((theme) => ({
+  root: (props: any) => ({
+    backgroundColor: props.open
+      ? theme.palette.action.hover
+      : theme.palette.background.default
+  })
+}))
 
 const NestedMenuItem = React.forwardRef<HTMLDivElement, NestedMenuItemProps>(
   function NestedMenuItem(props, ref) {
@@ -37,23 +46,31 @@ const NestedMenuItem = React.forwardRef<HTMLDivElement, NestedMenuItemProps>(
 
     const [isSubMenuOpen, setIsSubMenuOpen] = useState(false)
 
-    const onMouseEnter = (event: React.MouseEvent) => {
+    const handleMouseEnter = (event: React.MouseEvent) => {
       event.stopPropagation()
       setIsSubMenuOpen(true)
     }
-    const onMouseLeave = (event: React.MouseEvent) => {
+    const handleMouseLeave = (event: React.MouseEvent) => {
       event.stopPropagation()
       setIsSubMenuOpen(false)
     }
 
+    const open = isSubMenuOpen && parentMenuOpen
+
+    const menuItemClasses = useMenuItemStyles({open})
+
     return (
       <div
         ref={ref}
-        onMouseEnter={onMouseEnter}
-        onMouseLeave={onMouseLeave}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
         {...other}
       >
-        <MenuItem {...MenuItemProps} ref={menuItemRef}>
+        <MenuItem
+          {...MenuItemProps}
+          classes={menuItemClasses}
+          ref={menuItemRef}
+        >
           {label}
           {MenuItemProps.children}
           {rightIcon}
@@ -69,7 +86,7 @@ const NestedMenuItem = React.forwardRef<HTMLDivElement, NestedMenuItemProps>(
             vertical: 'top',
             horizontal: 'left'
           }}
-          open={isSubMenuOpen && parentMenuOpen}
+          open={open}
           onClose={() => {
             setIsSubMenuOpen(false)
           }}
