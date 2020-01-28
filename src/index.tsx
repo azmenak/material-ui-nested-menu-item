@@ -4,7 +4,8 @@ import Menu, {MenuProps} from '@material-ui/core/Menu'
 import MenuItem, {MenuItemProps} from '@material-ui/core/MenuItem'
 import ArrowRight from '@material-ui/icons/ArrowRight'
 
-interface NestedMenuItemProps extends React.HTMLAttributes<HTMLDivElement> {
+export interface NestedMenuItemProps
+  extends React.HTMLAttributes<HTMLDivElement> {
   parentMenuOpen: boolean
   /**
    * @default 'div'
