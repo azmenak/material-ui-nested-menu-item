@@ -1,11 +1,10 @@
-import React, {useState, useRef} from 'react'
+import React, {useState, useRef, useImperativeHandle} from 'react'
 import {makeStyles} from '@material-ui/core/styles'
 import Menu, {MenuProps} from '@material-ui/core/Menu'
 import MenuItem, {MenuItemProps} from '@material-ui/core/MenuItem'
 import ArrowRight from '@material-ui/icons/ArrowRight'
 
-export interface NestedMenuItemProps
-  extends React.HTMLAttributes<HTMLDivElement> {
+export interface NestedMenuItemProps extends MenuItemProps {
   parentMenuOpen: boolean
   /**
    * @default 'div'
@@ -16,7 +15,7 @@ export interface NestedMenuItemProps
    * @default <ArrowRight />
    */
   rightIcon?: React.ReactNode
-  MenuItemProps?: MenuItemProps
+  ContainerProps?: React.HTMLAttributes<Element>
   MenuProps?: Omit<MenuProps, 'children'>
 }
 
@@ -28,75 +27,80 @@ const useMenuItemStyles = makeStyles((theme) => ({
   })
 }))
 
-const NestedMenuItem = React.forwardRef<HTMLDivElement, NestedMenuItemProps>(
-  function NestedMenuItem(props, ref) {
-    const {
-      parentMenuOpen,
-      component = 'div',
-      label,
-      rightIcon = <ArrowRight />,
-      children,
-      MenuItemProps = {},
-      MenuProps = {},
-      onMouseEnter: onMouseEnterProp,
-      onMouseLeave: onMouseLeaveProp,
-      ...other
-    } = props
+// TODO
+// Generic for ContainerProps from `component`
 
-    const menuItemRef = useRef<HTMLLIElement>(null)
+const NestedMenuItem = React.forwardRef<
+  HTMLLIElement | null,
+  NestedMenuItemProps
+>(function NestedMenuItem(props, ref) {
+  const {
+    parentMenuOpen,
+    component = 'div',
+    label,
+    rightIcon = <ArrowRight />,
+    children,
+    MenuProps = {},
+    ContainerProps,
+    onMouseEnter: onMouseEnterProp,
+    onMouseLeave: onMouseLeaveProp,
+    ...MenuItemProps
+  } = props
 
-    const [isSubMenuOpen, setIsSubMenuOpen] = useState(false)
+  const menuItemRef = useRef<HTMLLIElement>(null)
+  useImperativeHandle(ref, () => menuItemRef.current)
 
-    const handleMouseEnter = (event: React.MouseEvent) => {
-      event.stopPropagation()
-      setIsSubMenuOpen(true)
+  const [isSubMenuOpen, setIsSubMenuOpen] = useState(false)
+
+  const handleMouseEnter = (event: React.MouseEvent) => {
+    if (ContainerProps?.onMouseEnter) {
+      ContainerProps.onMouseEnter(event)
     }
-    const handleMouseLeave = (event: React.MouseEvent) => {
-      event.stopPropagation()
-      setIsSubMenuOpen(false)
-    }
-
-    const open = isSubMenuOpen && parentMenuOpen
-
-    const menuItemClasses = useMenuItemStyles({open})
-
-    return (
-      <div
-        ref={ref}
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
-        {...other}
-      >
-        <MenuItem
-          {...MenuItemProps}
-          classes={menuItemClasses}
-          ref={menuItemRef}
-        >
-          {label}
-          {MenuItemProps.children}
-          {rightIcon}
-        </MenuItem>
-        <Menu
-          style={{pointerEvents: 'none'}}
-          anchorEl={menuItemRef.current}
-          anchorOrigin={{
-            vertical: 'top',
-            horizontal: 'right'
-          }}
-          transformOrigin={{
-            vertical: 'top',
-            horizontal: 'left'
-          }}
-          open={open}
-          onClose={() => {
-            setIsSubMenuOpen(false)
-          }}
-        >
-          <div style={{pointerEvents: 'auto'}}>{children}</div>
-        </Menu>
-      </div>
-    )
+    setIsSubMenuOpen(true)
   }
-)
+  const handleMouseLeave = (event: React.MouseEvent) => {
+    if (ContainerProps?.onMouseLeave) {
+      ContainerProps.onMouseLeave(event)
+    }
+    setIsSubMenuOpen(false)
+  }
+
+  const open = isSubMenuOpen && parentMenuOpen
+
+  const menuItemClasses = useMenuItemStyles({open})
+
+  return (
+    <div
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      {...ContainerProps}
+    >
+      <MenuItem {...MenuItemProps} classes={menuItemClasses} ref={menuItemRef}>
+        {label}
+        {rightIcon}
+      </MenuItem>
+      <Menu
+        // Set pointer events to 'none' to prevent the invisible Popover div
+        // from capturing events for clicks and hovers
+        style={{pointerEvents: 'none'}}
+        anchorEl={menuItemRef.current}
+        anchorOrigin={{
+          vertical: 'top',
+          horizontal: 'right'
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'left'
+        }}
+        open={open}
+        onClose={() => {
+          setIsSubMenuOpen(false)
+        }}
+      >
+        <div style={{pointerEvents: 'auto'}}>{children}</div>
+      </Menu>
+    </div>
+  )
+})
 
 export default NestedMenuItem
