@@ -3,20 +3,40 @@ import {makeStyles} from '@material-ui/core/styles'
 import Menu, {MenuProps} from '@material-ui/core/Menu'
 import MenuItem, {MenuItemProps} from '@material-ui/core/MenuItem'
 import ArrowRight from '@material-ui/icons/ArrowRight'
+import clsx from 'clsx'
 
-export interface NestedMenuItemProps extends MenuItemProps {
+export interface NestedMenuItemProps extends Omit<MenuItemProps, 'button'> {
+  /**
+   * Open state of parent `<Menu />`, used to close decendent menus when the
+   * root menu is closed.
+   */
   parentMenuOpen: boolean
   /**
+   * Component for the container element.
    * @default 'div'
    */
   component?: React.ElementType
+  /**
+   * Effectively becomes the `children` prop passed to the `<MenuItem/>`
+   * element.
+   */
   label?: React.ReactNode
   /**
    * @default <ArrowRight />
    */
   rightIcon?: React.ReactNode
+  /**
+   * Props passed to container element.
+   */
   ContainerProps?: React.HTMLAttributes<Element>
+  /**
+   * Props passed to sub `<Menu/>` element
+   */
   MenuProps?: Omit<MenuProps, 'children'>
+  /**
+   * @see https://material-ui.com/api/list-item/
+   */
+  button?: true | undefined
 }
 
 const useMenuItemStyles = makeStyles((theme) => ({
@@ -26,9 +46,6 @@ const useMenuItemStyles = makeStyles((theme) => ({
       : theme.palette.background.default
   })
 }))
-
-// TODO
-// Generic for ContainerProps from `component`
 
 const NestedMenuItem = React.forwardRef<
   HTMLLIElement | null,
@@ -40,10 +57,9 @@ const NestedMenuItem = React.forwardRef<
     label,
     rightIcon = <ArrowRight />,
     children,
+    className,
     MenuProps = {},
     ContainerProps,
-    onMouseEnter: onMouseEnterProp,
-    onMouseLeave: onMouseLeaveProp,
     ...MenuItemProps
   } = props
 
@@ -71,11 +87,15 @@ const NestedMenuItem = React.forwardRef<
 
   return (
     <div
+      {...ContainerProps}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      {...ContainerProps}
     >
-      <MenuItem {...MenuItemProps} classes={menuItemClasses} ref={menuItemRef}>
+      <MenuItem
+        {...MenuItemProps}
+        className={clsx(menuItemClasses.root, className)}
+        ref={menuItemRef}
+      >
         {label}
         {rightIcon}
       </MenuItem>
