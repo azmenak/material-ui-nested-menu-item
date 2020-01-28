@@ -4,6 +4,7 @@ import MenuItem, {MenuItemProps} from '@material-ui/core/MenuItem'
 import ArrowRight from '@material-ui/icons/ArrowRight'
 
 interface NestedMenuItemProps extends React.HTMLAttributes<HTMLDivElement> {
+  parentMenuOpen: boolean
   /**
    * @default 'div'
    */
@@ -20,6 +21,7 @@ interface NestedMenuItemProps extends React.HTMLAttributes<HTMLDivElement> {
 const NestedMenuItem = React.forwardRef<HTMLDivElement, NestedMenuItemProps>(
   function NestedMenuItem(props, ref) {
     const {
+      parentMenuOpen,
       component = 'div',
       label,
       rightIcon = <ArrowRight />,
@@ -67,7 +69,7 @@ const NestedMenuItem = React.forwardRef<HTMLDivElement, NestedMenuItemProps>(
             vertical: 'top',
             horizontal: 'left'
           }}
-          open={isSubMenuOpen}
+          open={isSubMenuOpen && parentMenuOpen}
           onClose={() => {
             setIsSubMenuOpen(false)
           }}
