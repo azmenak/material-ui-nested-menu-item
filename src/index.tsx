@@ -96,7 +96,7 @@ const NestedMenuItem = React.forwardRef<
   }
 
   // Check if any immediate children are active
-  const isFocused = () => {
+  const isSubmenuFocused = () => {
     const active = containerRef.current?.ownerDocument?.activeElement
     for (const child of menuContainerRef.current?.children ?? []) {
       if (child === active) {
@@ -121,18 +121,25 @@ const NestedMenuItem = React.forwardRef<
       return
     }
 
-    if (isFocused()) {
+    if (isSubmenuFocused()) {
       event.stopPropagation()
     }
 
-    if (event.target === containerRef.current) {
-      const active = containerRef.current.ownerDocument?.activeElement
-      if (active === containerRef.current && event.key === 'ArrowRight') {
-        const firstChild = menuContainerRef.current?.children[0] as
-          | HTMLElement
-          | undefined
-        firstChild?.focus()
-      }
+    const active = containerRef.current?.ownerDocument?.activeElement
+
+    if (event.key === 'ArrowLeft' && isSubmenuFocused()) {
+      containerRef.current?.focus()
+    }
+
+    if (
+      event.key === 'ArrowRight' &&
+      event.target === containerRef.current &&
+      event.target === active
+    ) {
+      const firstChild = menuContainerRef.current?.children[0] as
+        | HTMLElement
+        | undefined
+      firstChild?.focus()
     }
   }
 
