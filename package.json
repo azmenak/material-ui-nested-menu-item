@@ -7,7 +7,7 @@
     "url": "https://github.com/azmenak/material-ui-nested-menu-item"
   },
   "scripts": {
-    "test": "jest",
+    "test": "echo \"No units tests.\"",
     "build": "pika build",
     "publish": "pika publish",
     "storybook": "start-storybook -p 6006",
