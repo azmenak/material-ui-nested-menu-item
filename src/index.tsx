@@ -28,7 +28,8 @@ export interface NestedMenuItemProps extends Omit<MenuItemProps, 'button'> {
   /**
    * Props passed to container element.
    */
-  ContainerProps?: React.HTMLAttributes<Element>
+  ContainerProps?: React.HTMLAttributes<HTMLElement> &
+    React.RefAttributes<HTMLElement | null>
   /**
    * Props passed to sub `<Menu/>` element
    */
@@ -39,14 +40,17 @@ export interface NestedMenuItemProps extends Omit<MenuItemProps, 'button'> {
   button?: true | undefined
 }
 
+const TRANSPARENT = 'rgba(0,0,0,0)'
 const useMenuItemStyles = makeStyles((theme) => ({
   root: (props: any) => ({
-    backgroundColor: props.open
-      ? theme.palette.action.hover
-      : theme.palette.background.default
+    backgroundColor: props.open ? theme.palette.action.hover : TRANSPARENT
   })
 }))
 
+/**
+ * Use as a drop-in replacement for `<MenuItem>` when you need to add cascading
+ * menu elements as children to this component.
+ */
 const NestedMenuItem = React.forwardRef<
   HTMLLIElement | null,
   NestedMenuItemProps
@@ -58,38 +62,98 @@ const NestedMenuItem = React.forwardRef<
     rightIcon = <ArrowRight />,
     children,
     className,
+    tabIndex: tabIndexProp,
     MenuProps = {},
-    ContainerProps,
+    ContainerProps: ContainerPropsProp = {},
     ...MenuItemProps
   } = props
+
+  const {ref: containerRefProp, ...ContainerProps} = ContainerPropsProp
 
   const menuItemRef = useRef<HTMLLIElement>(null)
   useImperativeHandle(ref, () => menuItemRef.current)
 
+  const containerRef = useRef<HTMLDivElement>(null)
+  useImperativeHandle(containerRefProp, () => containerRef.current)
+
+  const menuContainerRef = useRef<HTMLDivElement>(null)
+
   const [isSubMenuOpen, setIsSubMenuOpen] = useState(false)
 
-  const handleMouseEnter = (event: React.MouseEvent) => {
+  const handleMouseEnter = (event: React.MouseEvent<HTMLElement>) => {
+    setIsSubMenuOpen(true)
+
     if (ContainerProps?.onMouseEnter) {
       ContainerProps.onMouseEnter(event)
     }
-    setIsSubMenuOpen(true)
   }
-  const handleMouseLeave = (event: React.MouseEvent) => {
+  const handleMouseLeave = (event: React.MouseEvent<HTMLElement>) => {
+    setIsSubMenuOpen(false)
+
     if (ContainerProps?.onMouseLeave) {
       ContainerProps.onMouseLeave(event)
     }
-    setIsSubMenuOpen(false)
+  }
+
+  // Check if any immediate children are active
+  const isFocused = () => {
+    const active = containerRef.current?.ownerDocument?.activeElement
+    for (const child of menuContainerRef.current?.children ?? []) {
+      if (child === active) {
+        return true
+      }
+    }
+    return false
+  }
+
+  const handleFocus = (event: React.FocusEvent<HTMLElement>) => {
+    if (event.target === containerRef.current) {
+      setIsSubMenuOpen(true)
+    }
+
+    if (ContainerProps?.onFocus) {
+      ContainerProps.onFocus(event)
+    }
+  }
+
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === 'Escape') {
+      return
+    }
+
+    if (isFocused()) {
+      event.stopPropagation()
+    }
+
+    if (event.target === containerRef.current) {
+      const active = containerRef.current.ownerDocument?.activeElement
+      if (active === containerRef.current && event.key === 'ArrowRight') {
+        const firstChild = menuContainerRef.current?.children[0] as
+          | HTMLElement
+          | undefined
+        firstChild?.focus()
+      }
+    }
   }
 
   const open = isSubMenuOpen && parentMenuOpen
-
   const menuItemClasses = useMenuItemStyles({open})
+
+  // Root element must have a `tabIndex` attribute for keyboard navigation
+  let tabIndex
+  if (!props.disabled) {
+    tabIndex = tabIndexProp !== undefined ? tabIndexProp : -1
+  }
 
   return (
     <div
       {...ContainerProps}
+      ref={containerRef}
+      onFocus={handleFocus}
+      tabIndex={tabIndex}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
+      onKeyDown={handleKeyDown}
     >
       <MenuItem
         {...MenuItemProps}
@@ -113,11 +177,16 @@ const NestedMenuItem = React.forwardRef<
           horizontal: 'left'
         }}
         open={open}
+        autoFocus={false}
+        disableAutoFocus
+        disableEnforceFocus
         onClose={() => {
           setIsSubMenuOpen(false)
         }}
       >
-        <div style={{pointerEvents: 'auto'}}>{children}</div>
+        <div ref={menuContainerRef} style={{pointerEvents: 'auto'}}>
+          {children}
+        </div>
       </Menu>
     </div>
   )
