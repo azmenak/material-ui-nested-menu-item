@@ -11,7 +11,8 @@
     "build": "pika build",
     "publish": "pika publish",
     "storybook": "start-storybook -p 6006",
-    "build-storybook": "build-storybook"
+    "build-storybook": "build-storybook",
+    "version": "npm run build"
   },
   "keywords": [
     "react",
