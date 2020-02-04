@@ -9,6 +9,7 @@
   "scripts": {
     "test": "jest",
     "build": "pika build",
+    "publish": "pika publish",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook"
   },
