@@ -1,7 +1,7 @@
 import React, {useState, useRef} from 'react'
 import {Menu, MenuItem, Typography} from '@material-ui/core'
 
-import NestedMenuItem from '../src'
+import NestedMenuItem from '..'
 
 export default {
   title: 'Nested Menu Item'
