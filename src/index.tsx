@@ -24,6 +24,14 @@ export interface NestedMenuItemProps extends Omit<MenuItemProps, 'button'> {
   /**
    * @default <ArrowRight />
    */
+  anchorOrigin?: React.Object
+  /**
+   * @default { vertical: 'top', horizontal: 'right' }
+   */
+  transformOrigin?: React.Object
+  /**
+   * @default { vertical: 'top', horizontal: 'left' }
+   */
   rightIcon?: React.ReactNode
   /**
    * Props passed to container element.
@@ -59,6 +67,14 @@ const NestedMenuItem = React.forwardRef<
     parentMenuOpen,
     component = 'div',
     label,
+    anchorOrigin = {
+      vertical: 'top',
+      horizontal: 'right'
+    },
+    transformOrigin = {
+      vertical: 'top',
+      horizontal: 'left'
+    },
     rightIcon = <ArrowRight />,
     children,
     className,
@@ -175,14 +191,8 @@ const NestedMenuItem = React.forwardRef<
         // from capturing events for clicks and hovers
         style={{pointerEvents: 'none'}}
         anchorEl={menuItemRef.current}
-        anchorOrigin={{
-          vertical: 'top',
-          horizontal: 'right'
-        }}
-        transformOrigin={{
-          vertical: 'top',
-          horizontal: 'left'
-        }}
+        anchorOrigin={anchorOrigin}
+        transformOrigin={transformOrigin}
         open={open}
         autoFocus={false}
         disableAutoFocus
