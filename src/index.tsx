@@ -190,6 +190,7 @@ const NestedMenuItem = React.forwardRef<
         onClose={() => {
           setIsSubMenuOpen(false)
         }}
+        {...MenuProps}
       >
         <div ref={menuContainerRef} style={{pointerEvents: 'auto'}}>
           {children}
