@@ -44,10 +44,6 @@ const TRANSPARENT = 'rgba(0,0,0,0)'
 const useMenuItemStyles = makeStyles((theme) => ({
   root: (props: any) => ({
     backgroundColor: props.open ? theme.palette.action.hover : TRANSPARENT
-  }),
-  paper: (props: any) => ({
-    backgroundColor: 'red',
-    padding: '100px'
   })
 }))
 
