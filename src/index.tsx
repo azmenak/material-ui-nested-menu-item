@@ -44,6 +44,10 @@ const TRANSPARENT = 'rgba(0,0,0,0)'
 const useMenuItemStyles = makeStyles((theme) => ({
   root: (props: any) => ({
     backgroundColor: props.open ? theme.palette.action.hover : TRANSPARENT
+  }),
+  paper: (props: any) => ({
+    backgroundColor: 'red',
+    padding: '100px'
   })
 }))
 
@@ -171,8 +175,6 @@ const NestedMenuItem = React.forwardRef<
         {rightIcon}
       </MenuItem>
       <Menu
-        // Set pointer events to 'none' to prevent the invisible Popover div
-        // from capturing events for clicks and hovers
         style={{pointerEvents: 'none'}}
         anchorEl={menuItemRef.current}
         anchorOrigin={{
@@ -190,6 +192,7 @@ const NestedMenuItem = React.forwardRef<
         onClose={() => {
           setIsSubMenuOpen(false)
         }}
+        {...MenuProps}
       >
         <div ref={menuContainerRef} style={{pointerEvents: 'auto'}}>
           {children}
