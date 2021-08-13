@@ -3,6 +3,7 @@ import {makeStyles} from '@material-ui/core/styles'
 import Menu, {MenuProps} from '@material-ui/core/Menu'
 import MenuItem, {MenuItemProps} from '@material-ui/core/MenuItem'
 import ArrowRight from '@material-ui/icons/ArrowRight'
+import Box from '@material-ui/core/Box';
 import clsx from 'clsx'
 
 export interface NestedMenuItemProps extends Omit<MenuItemProps, 'button'> {
@@ -168,6 +169,7 @@ const NestedMenuItem = React.forwardRef<
         ref={menuItemRef}
       >
         {label}
+        <Box sx={{ flexGrow: 1 }} />
         {rightIcon}
       </MenuItem>
       <Menu
