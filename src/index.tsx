@@ -38,6 +38,10 @@ export interface NestedMenuItemProps extends Omit<MenuItemProps, 'button'> {
    * @see https://material-ui.com/api/list-item/
    */
   button?: true | undefined
+  /**
+   * Specifies whether the menu should open to the right or left
+   */
+  direction?: 'left' | 'right'
 }
 
 const TRANSPARENT = 'rgba(0,0,0,0)'
@@ -52,13 +56,14 @@ const useMenuItemStyles = makeStyles((theme) => ({
  * menu elements as children to this component.
  */
 const NestedMenuItem = React.forwardRef<
-  HTMLLIElement | null,
+  HTMLLIElement,
   NestedMenuItemProps
 >(function NestedMenuItem(props, ref) {
   const {
     parentMenuOpen,
     component = 'div',
     label,
+    direction = 'right',
     rightIcon = <ArrowRight />,
     children,
     className,
@@ -71,7 +76,11 @@ const NestedMenuItem = React.forwardRef<
   const {ref: containerRefProp, ...ContainerProps} = ContainerPropsProp
 
   const menuItemRef = useRef<HTMLLIElement>(null)
-  useImperativeHandle(ref, () => menuItemRef.current)
+  if (menuItemRef && menuItemRef.current) { 
+    const val:HTMLLIElement = menuItemRef.current;
+    useImperativeHandle(ref, () => val)
+  }
+  
 
   const containerRef = useRef<HTMLDivElement>(null)
   useImperativeHandle(containerRefProp, () => containerRef.current)
@@ -177,11 +186,11 @@ const NestedMenuItem = React.forwardRef<
         anchorEl={menuItemRef.current}
         anchorOrigin={{
           vertical: 'top',
-          horizontal: 'right'
+          horizontal: direction=='right' ? 'right' : 'left'
         }}
         transformOrigin={{
           vertical: 'top',
-          horizontal: 'left'
+          horizontal: direction=='right' ? 'left' : 'right'
         }}
         open={open}
         autoFocus={false}
