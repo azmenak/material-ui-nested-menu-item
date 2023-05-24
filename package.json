@@ -46,12 +46,12 @@
     "babel-loader": "^8.0.6",
     "clsx": "^1.0.4",
     "jest": "^24.9.0",
-    "react": "^16.12.0",
+    "react": "^18.2.0",
     "react-dom": "^16.12.0",
     "react-test-renderer": "^16.12.0",
     "ts-jest": "^24.3.0",
     "ts-loader": "^6.2.1",
-    "typescript": "^3.7.4"
+    "typescript": "^5.0.4"
   },
   "peerDependencies": {
     "@material-ui/core": "^4.9.0",
@@ -74,5 +74,8 @@
         "@pika/plugin-build-web"
       ]
     ]
+  },
+  "dependencies": {
+    "ts-node": "^10.9.1"
   }
 }

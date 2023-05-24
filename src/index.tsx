@@ -3,6 +3,7 @@ import {makeStyles} from '@material-ui/core/styles'
 import Menu, {MenuProps} from '@material-ui/core/Menu'
 import MenuItem, {MenuItemProps} from '@material-ui/core/MenuItem'
 import ArrowRight from '@material-ui/icons/ArrowRight'
+import ArrowLeft from '@material-ui/icons/ArrowLeft'
 import clsx from 'clsx'
 
 export interface NestedMenuItemProps extends Omit<MenuItemProps, 'button'> {
@@ -26,6 +27,10 @@ export interface NestedMenuItemProps extends Omit<MenuItemProps, 'button'> {
    */
   rightIcon?: React.ReactNode
   /**
+   * @default <ArrowLeft />
+   */
+  leftIcon?: React.ReactNode
+  /**
    * Props passed to container element.
    */
   ContainerProps?: React.HTMLAttributes<HTMLElement> &
@@ -38,6 +43,10 @@ export interface NestedMenuItemProps extends Omit<MenuItemProps, 'button'> {
    * @see https://material-ui.com/api/list-item/
    */
   button?: true | undefined
+  /**
+   * Specifies whether the menu should open to the right or left
+   */
+  direction?: 'left' | 'right'
 }
 
 const TRANSPARENT = 'rgba(0,0,0,0)'
@@ -59,7 +68,9 @@ const NestedMenuItem = React.forwardRef<
     parentMenuOpen,
     component = 'div',
     label,
+    direction = 'right',
     rightIcon = <ArrowRight />,
+    leftIcon = <ArrowLeft />,
     children,
     className,
     tabIndex: tabIndexProp,
@@ -71,6 +82,7 @@ const NestedMenuItem = React.forwardRef<
   const {ref: containerRefProp, ...ContainerProps} = ContainerPropsProp
 
   const menuItemRef = useRef<HTMLLIElement>(null)
+  
   useImperativeHandle(ref, () => menuItemRef.current)
 
   const containerRef = useRef<HTMLDivElement>(null)
@@ -151,7 +163,13 @@ const NestedMenuItem = React.forwardRef<
   if (!props.disabled) {
     tabIndex = tabIndexProp !== undefined ? tabIndexProp : -1
   }
-
+  let iconStyle ={};
+  let icon = rightIcon;
+  if (direction=="left") { 
+    iconStyle={position:'absolute', left:'-3px', top:'1px'}
+    icon = leftIcon;
+  }
+  
   return (
     <div
       {...ContainerProps}
@@ -168,7 +186,7 @@ const NestedMenuItem = React.forwardRef<
         ref={menuItemRef}
       >
         {label}
-        {rightIcon}
+        <div style={iconStyle}>{icon}</div>
       </MenuItem>
       <Menu
         // Set pointer events to 'none' to prevent the invisible Popover div
@@ -177,11 +195,11 @@ const NestedMenuItem = React.forwardRef<
         anchorEl={menuItemRef.current}
         anchorOrigin={{
           vertical: 'top',
-          horizontal: 'right'
+          horizontal: direction=='right' ? 'right' : 'left'
         }}
         transformOrigin={{
           vertical: 'top',
-          horizontal: 'left'
+          horizontal: direction=='right' ? 'left' : 'right'
         }}
         open={open}
         autoFocus={false}
